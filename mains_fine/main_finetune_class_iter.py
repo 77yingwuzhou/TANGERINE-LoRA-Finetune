@@ -288,22 +288,6 @@ def main(args):
         msg = model.load_state_dict(filtered_checkpoint, strict=False)
         print(msg)
 
-        if args.finetune and not args.eval:
-        checkpoint = torch.load(args.finetune, map_location='cpu')
-        print("Load pre-trained checkpoint from: %s" % args.finetune)
-        checkpoint_model = checkpoint['model'] if "model" in checkpoint.keys() else checkpoint['model_state']
-
-        if 'pos_embed' in checkpoint_model:
-            interpolate_pos_embed(model, checkpoint_model)
-
-        # Filter out keys that do not match in shape
-        model_dict = model.state_dict()
-        filtered_checkpoint = {k: v for k, v in checkpoint_model.items() if k in model_dict and model_dict[k].shape == v.shape}
-
-        # Load the filtered checkpoint into the model
-        msg = model.load_state_dict(filtered_checkpoint, strict=False)
-        print(msg)
-
         # ---------------------------------------------------------
         # 1. 初始化自定义的 3D 架构分类头和归一化层
         # ---------------------------------------------------------
@@ -342,7 +326,6 @@ def main(args):
         # ---------------------------------------------------------
 
     # 将包装好 LoRA 并完成初始化的模型送入显卡
-    model.to(device)
     model.to(device)
 
     model_without_ddp = model
