@@ -48,7 +48,6 @@ from monai.transforms import (
     Compose, RandGaussianNoise, RandGaussianSmooth, RandAdjustContrast,
 )
 
-from peft import LoraConfig, get_peft_model
 
 def get_args_parser():
     parser = argparse.ArgumentParser('MAE fine-tuning for image classification', add_help=False)
@@ -93,16 +92,7 @@ def get_args_parser():
     # * Finetuning params
     parser.add_argument('--finetune', default='',
                         help='finetune from checkpoint')
-    # ---------------------------------------------------------
-    # 新增：LoRA 微调参数
-    # ---------------------------------------------------------
-    parser.add_argument('--lora_r', type=int, default=8,
-                        help='Rank (r) for LoRA adapters. Typical values: 4, 8, 16, 32')
-    parser.add_argument('--lora_alpha', type=int, default=16,
-                        help='Alpha for LoRA adapters. Usually 2x or 1x of lora_r')
-    parser.add_argument('--lora_dropout', type=float, default=0.1,
-                        help='Dropout rate for LoRA adapters.')
-    # ---------------------------------------------------------
+ 
     parser.add_argument('--global_pool', action='store_true')
     parser.set_defaults(global_pool=True)
     parser.add_argument('--cls_token', action='store_false', dest='global_pool',
