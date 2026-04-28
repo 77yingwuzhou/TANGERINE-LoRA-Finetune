@@ -289,7 +289,7 @@ def main(args):
         print(msg)
 
         # ---------------------------------------------------------
-        # 1. 初始化自定义的 3D 架构分类头和归一化层
+        # 初始化自定义的 3D 架构分类头和归一化层
         # ---------------------------------------------------------
         print("Initializing custom MLP head and fc_norm...")
         
@@ -305,27 +305,7 @@ def main(args):
             torch.nn.init.constant_(model.fc_norm.bias, 0)
             torch.nn.init.constant_(model.fc_norm.weight, 1.0)
 
-        # ---------------------------------------------------------
-        # 2. 注入 LoRA (必须在权重初始化完成后执行)
-        # ---------------------------------------------------------
-        print("Injecting LoRA adapters...")
-        from peft import LoraConfig, get_peft_model
         
-        lora_config = LoraConfig(
-            r=args.lora_r,
-            lora_alpha=args.lora_alpha,
-            target_modules=["qkv"], 
-            lora_dropout=args.lora_dropout,
-            bias="none",
-            # 明确保护 3D 架构新增的层，让它们参与梯度更新并保存
-            modules_to_save=["head", "fc_norm"] 
-        )
-        
-        model = get_peft_model(model, lora_config)
-        model.print_trainable_parameters()
-        # ---------------------------------------------------------
-
-    # 将包装好 LoRA 并完成初始化的模型送入显卡
     model.to(device)
 
     model_without_ddp = model
